@@ -1,0 +1,315 @@
+/* ─── SHARED PANEL STYLES ────────────────────────────────────────────── */
+
+.panelGrid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.sectionLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* ── Empty State ─────────────────────────────────────────────────────── */
+.emptyState {
+  padding: 48px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.emptyStateIcon { font-size: 40px; opacity: 0.5; }
+
+.emptyStateText {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.7;
+  max-width: 280px;
+}
+
+/* ── Analyzing State ─────────────────────────────────────────────────── */
+.analyzingLabel {
+  font-size: 13px;
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+
+.analyzingHint {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+/* ── Results ─────────────────────────────────────────────────────────── */
+.resultContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  animation: fadeInUp 0.4s ease both;
+}
+
+.alertBanner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius-md);
+}
+
+.affectedFile {
+  padding: 14px;
+  border-radius: var(--radius-md);
+  transition: all 0.4s;
+  margin-bottom: 10px;
+}
+
+.affectedFileHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.fileLine {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  margin-left: auto;
+}
+
+.successBanner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  margin-top: 16px;
+  border-color: rgba(34,197,94,0.3);
+  background: rgba(34,197,94,0.06) !important;
+  border-radius: var(--radius-md);
+}
+
+/* ── Change Box (Domino) ─────────────────────────────────────────────── */
+.changeBox { padding: 14px 16px; }
+.changeBoxTitle {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+.changeBoxBody { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+/* ── Stats Row (Diet) ────────────────────────────────────────────────── */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.miniStat {
+  padding: 16px;
+  text-align: center;
+}
+
+/* ── File Tree Card ──────────────────────────────────────────────────── */
+.fileTreeCard {
+  padding: 12px;
+  max-height: 340px;
+  overflow-y: auto;
+}
+.fileTreeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px 10px;
+  font-weight: 600;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 6px;
+}
+
+/* ── Package Item ────────────────────────────────────────────────────── */
+.packageItem {
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  transition: all 0.4s;
+}
+.packageItemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+/* ── Savings Card ────────────────────────────────────────────────────── */
+.savingsCard { padding: 20px; }
+
+/* ── PR Translator ───────────────────────────────────────────────────── */
+.prCard { padding: 0; overflow: hidden; }
+.prHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.02);
+}
+.prBody {
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  line-height: 1.7;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.modeToggle {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.modeBtn {
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-sans);
+}
+.modeBtnActive {
+  background: var(--accent-blue);
+  color: #fff;
+}
+
+.executiveReport { padding: 20px; }
+.reportHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.reportHeadline {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.reportBullets { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.reportBullet {
+  display: flex;
+  align-items: flex-start;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.reportImpact {
+  margin-top: 16px;
+  padding: 14px;
+  background: rgba(6,182,212,0.06);
+  border: 1px solid rgba(6,182,212,0.2);
+  border-radius: var(--radius-md);
+}
+.reportDebt { margin-top: 12px; }
+
+/* ── 3AM Savior ──────────────────────────────────────────────────────── */
+.alarmHeader {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  border-radius: var(--radius-md);
+}
+.clockSection { text-align: center; }
+.clockIcon { font-size: 24px; }
+.clockTime {
+  font-size: 32px;
+  font-weight: 900;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+  letter-spacing: 2px;
+}
+.clockLabel { font-size: 11px; color: var(--text-muted); }
+.alarmSection {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.alarmDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--accent-red);
+  box-shadow: 0 0 10px var(--accent-red);
+  flex-shrink: 0;
+  animation: pulse-dot 1s ease-in-out infinite;
+}
+
+.logInput {
+  width: 100%;
+  background: #0a0a12;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 14px;
+  resize: vertical;
+  line-height: 1.7;
+  transition: border-color 0.2s;
+}
+.logInput:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+}
+.logInput::placeholder { color: var(--text-muted); }
+
+.rootCauseCard { padding: 16px; margin-bottom: 10px; }
+.prTriggerCard { padding: 16px; margin-bottom: 10px; }
+.explanationCard { padding: 16px; margin-bottom: 10px; }
+
+.causeRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+.causeLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  min-width: 60px;
+  padding-top: 2px;
+}
+
+/* ── Inline code ─────────────────────────────────────────────────────── */
+.codeInline {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: rgba(255,255,255,0.07);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .panelGrid2 { grid-template-columns: 1fr; }
+}
