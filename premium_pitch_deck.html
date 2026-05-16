@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bob 360 - Pitch Deck</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+    :root {
+      --bg: #030305;
+      --text: #ffffff;
+      --text-muted: #888899;
+      --accent: #00f0ff;
+      --red: #ff3366;
+      --purple: #b052ff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Print settings for PDF */
+    @page {
+      size: 1920px 1080px;
+      margin: 0;
+    }
+
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .slide { page-break-after: always; }
+      .slide:last-child { page-break-after: auto; }
+    }
+
+    .slide {
+      width: 1920px;
+      height: 1080px;
+      position: relative;
+      overflow: hidden;
+      padding: 100px 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: var(--bg);
+    }
+
+    /* Subtle grid background */
+    .bg-grid {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 0;
+      opacity: 0.5;
+    }
+
+    /* Glows optimized for PDF printing (no filter: blur) */
+    .glow {
+      position: absolute;
+      width: 1200px;
+      height: 1200px;
+      background: radial-gradient(circle, rgba(0, 240, 255, 0.08) 0%, rgba(0, 240, 255, 0.02) 40%, transparent 70%);
+      border-radius: 50%;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+    }
+    
+    .glow.red { background: radial-gradient(circle, rgba(255, 51, 102, 0.08) 0%, rgba(255, 51, 102, 0.02) 40%, transparent 70%); }
+    .glow.purple { background: radial-gradient(circle, rgba(176, 82, 255, 0.08) 0%, rgba(176, 82, 255, 0.02) 40%, transparent 70%); }
+    .glow.top-right { top: -200px; left: 1000px; }
+    .glow.bottom-left { top: 600px; left: -200px; }
+
+    .content {
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Typography */
+    .label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 24px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .label::before {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 2px;
+      background: var(--accent);
+    }
+
+    h1 {
+      font-size: 140px;
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -4px;
+      margin-bottom: 40px;
+    }
+
+    h2 {
+      font-size: 80px;
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -2px;
+      margin-bottom: 60px;
+      color: #e2e8f0;
+    }
+
+    .subtitle {
+      font-size: 40px;
+      font-weight: 300;
+      color: var(--text-muted);
+      line-height: 1.5;
+      max-width: 1200px;
+    }
+
+    .accent-text { color: var(--accent); }
+    .red-text { color: var(--red); }
+    .purple-text { color: var(--purple); }
+
+    /* Layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      margin-top: 60px;
+    }
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+      margin-top: 60px;
+    }
+
+    /* Cards */
+    .card {
+      background: rgba(25, 25, 30, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 60px 50px;
+    }
+    .card h3 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      letter-spacing: -1px;
+    }
+    .card p {
+      font-size: 24px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Huge Stats */
+    .stat {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 120px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+    
+    /* Footer logo */
+    .footer {
+      position: absolute;
+      bottom: 80px;
+      left: 140px;
+      right: 140px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 20px;
+      color: rgba(255,255,255,0.3);
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SLIDE 1: TITLE -->
+  <div class="slide">
+    <div class="bg-grid"></div>
+    <div class="glow"></div>
+    <div class="content" style="text-align: center; display: flex; flex-direction: column; align-items: center;">
+      <div class="label" style="justify-content: center;">IBM Bob Hackathon 2026</div>
+      <h1 style="font-size: 200px; color: var(--accent);">BOB 360</h1>
+      <p class="subtitle" style="font-size: 50px; max-width: 1400px;">The AI Tech Lead that never sleeps.<br>From the first line of code, to the 3 AM crash.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: PROBLEM -->
+  <div class="slide">
+    <div class="bg-grid"></div>
+    <div class="glow red bottom-left"></div>
+    <div class="content">
+      <div class="label" style="color: var(--red);"><span style="background: var(--red); width: 40px; height: 2px;"></span>The Problem</div>
+      <h2>EVERY SOFTWARE TEAM <span class="red-text">BLEEDS TIME.</span></h2>
+      
+      <div class="grid-2">
+        <div class="card" style="border-top: 4px solid var(--red);">
+          <h3 style="color: #fff;">Cascade Failures</h3>
+          <p>Developers spend hours hunting bugs caused by a single renamed variable in a massive codebase.</p>
+        </div>
+        <div class="card">
+          <h3 style="color: #fff;">Technical Debt</h3>
+          <p>Orphaned files, dead code, and zombie packages silently bloat repositories by over 50%.</p>
+        </div>
+        <div class="card">
+          <h3 style="color: #fff;">The Translation Gap</h3>
+          <p>Product managers and executives have no idea what a technical Pull Request actually means for the business.</p>
+        </div>
+        <div class="card">
+          <h3 style="color: #fff;">3 AM Crashes</h3>
+          <p>Engineers get woken up in the middle of the night to decipher cryptic error logs while production is down.</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <span>These aren't edge cases.</span>
+      <span>They happen every week.</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: SOLUTION -->
+  <div class="slide">
+    <div class="bg-grid"></div>
+    <div class="glow top-right"></div>
+    <div class="content">
+      <div class="label">The Solution</div>
+      <h2>ENTER <span class="accent-text">BOB 360.</span></h2>
+      <p class="subtitle" style="margin-bottom: 80px;">One unified dashboard. Four AI guardians.</p>
+      
+      <div class="grid-4">
+        <div class="card">
+          <div style="font-size: 50px; margin-bottom: 20px;">🧩</div>
+          <h3 style="font-size: 28px; color: #fff;">Domino Preventer</h3>
+          <p style="font-size: 20px;">Detects cascade failures before they happen.</p>
+        </div>
+        <div class="card">
+          <div style="font-size: 50px; margin-bottom: 20px;">🗑️</div>
+          <h3 style="font-size: 28px; color: #fff;">Code Diet</h3>
+          <p style="font-size: 20px;">Finds and removes dead code safely.</p>
+        </div>
+        <div class="card">
+          <div style="font-size: 50px; margin-bottom: 20px;">👔</div>
+          <h3 style="font-size: 28px; color: #fff;">PR Translator</h3>
+          <p style="font-size: 20px;">Converts code to executive business impact.</p>
+        </div>
+        <div class="card">
+          <div style="font-size: 50px; margin-bottom: 20px;">🚨</div>
+          <h3 style="font-size: 28px; color: #fff;">3AM Savior</h3>
+          <p style="font-size: 20px;">Traces crash logs to root causes in seconds.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: THE SECRET -->
+  <div class="slide">
+    <div class="bg-grid"></div>
+    <div class="glow"></div>
+    <div class="content" style="text-align: center; max-width: 1400px; margin: 0 auto;">
+      <div class="label" style="justify-content: center;">The Technology</div>
+      <h2>WHY IS THIS ONLY POSSIBLE WITH <span class="accent-text">IBM BOB</span>?</h2>
+      
+      <p class="subtitle" style="margin: 0 auto 60px; font-size: 44px; color: #fff;">Standard AI tools see a <em>code snippet</em>.<br>IBM Bob sees the <em>entire repository</em>.</p>
+      
+      <p class="subtitle" style="margin: 0 auto;">It understands your architecture, file dependencies, import chains, and full git history. Full-repo context isn't a feature for us — it's the absolute foundation.</p>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: IMPACT -->
+  <div class="slide">
+    <div class="bg-grid"></div>
+    <div class="glow purple bottom-left"></div>
+    <div class="content">
+      <div class="label" style="color: var(--purple);"><span style="background: var(--purple); width: 40px; height: 2px;"></span>The Results</div>
+      <h2>REAL <span class="purple-text">IMPACT.</span></h2>
+      
+      <div class="grid-4" style="margin-top: 100px;">
+        <div>
+          <div class="stat purple-text">1</div>
+          <h3 style="font-size: 28px; margin-bottom: 16px; color: #fff;">Cascade Blocked</h3>
+          <p style="font-size: 20px; color: var(--text-muted);">4 critical files saved from breaking in production.</p>
+        </div>
+        <div>
+          <div class="stat purple-text">54%</div>
+          <h3 style="font-size: 28px; margin-bottom: 16px; color: #fff;">Lighter Repo</h3>
+          <p style="font-size: 20px; color: var(--text-muted);">Safely removed 5 files and 4 zombie packages.</p>
+        </div>
+        <div>
+          <div class="stat purple-text">3s</div>
+          <h3 style="font-size: 28px; margin-bottom: 16px; color: #fff;">Executive Report</h3>
+          <p style="font-size: 20px; color: var(--text-muted);">Generated instantly, saving 30+ minutes manually.</p>
+        </div>
+        <div>
+          <div class="stat purple-text">43s</div>
+          <h3 style="font-size: 28px; margin-bottom: 16px; color: #fff;">Downtime Saved</h3>
+          <p style="font-size: 20px; color: var(--text-muted);">Server restored instantly vs 40m manual debug.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: TEAM -->
+  <div class="slide">
+    <div class="bg-grid"></div>
+    <div class="content">
+      <div class="label">The Visionaries</div>
+      <h2>BUILT BY THE <span class="accent-text">NEXT GENERATION.</span></h2>
+      
+      <div class="grid-2">
+        <div>
+          <h3 style="font-size: 40px; margin-bottom: 24px; color: #fff;">Huseyn Verdiyev &<br>Farid Hashimli</h3>
+          <p class="subtitle" style="font-size: 28px; margin-bottom: 40px; color: #fff;">Two high school students from Azerbaijan.</p>
+        </div>
+        <div>
+          <p class="subtitle" style="font-size: 26px; margin-bottom: 30px;">While others are playing games, we are architecting solutions for real-world enterprise problems. We don't just write code; we envision the future of software development.</p>
+          <p class="subtitle" style="font-size: 26px;">Bob 360 is our first step toward building the ultimate AI developer ecosystem. We are the young disruptors.</p>
+          <p class="subtitle accent-text" style="font-size: 26px; margin-top: 30px; font-weight: 600;">And we are just getting started.</p>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <span>BOB 360</span>
+      <span>IBM BOB HACKATHON 2026</span>
+    </div>
+  </div>
+
+</body>
+</html>
