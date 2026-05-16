@@ -1,242 +1,134 @@
 "use client";
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
 
-const FEATURES = [
+const MODULES = [
   {
-    icon: "🧩",
-    color: "amber",
     title: "Domino Preventer",
-    desc: "Detects cascade failures before they happen. Change one field — Bob warns you about all 4 files that will break.",
+    desc: "Rename one field. Bob shows you every file that will break — before you commit.",
+    tag: "Cascade Protection",
   },
   {
-    icon: "🗑️",
-    color: "cyan",
     title: "Code Diet",
-    desc: "Finds dead code, unused packages, and orphaned files. Cleans your repo silently. Makes it 50% lighter.",
+    desc: "Dead files, zombie packages, orphaned functions. Bob finds them and removes them safely.",
+    tag: "Cleanup",
   },
   {
-    icon: "👔",
-    color: "purple",
     title: "PR Translator",
-    desc: "Converts technical pull requests into plain-English release notes. Your CEO will actually understand what shipped.",
+    desc: "Your CEO doesn't know what a compound index is. Bob translates your PR into plain English.",
+    tag: "Communication",
   },
   {
-    icon: "🚨",
-    color: "red",
     title: "3AM Savior",
-    desc: "Paste a crash log at 3AM. Bob traces it to the exact PR, the exact developer, and gives you a 1-click fix.",
+    desc: "Production is down. Paste the crash log. Bob points to the exact PR that caused it.",
+    tag: "Incident Response",
   },
-];
-
-const STATS = [
-  { value: "4x", label: "Faster Debugging" },
-  { value: "54%", label: "Repo Size Reduction" },
-  { value: "8×", label: "Faster Load Times" },
-  { value: "0", label: "Missed Cascades" },
 ];
 
 export default function HomePage() {
-  const [mounted, setMounted] = useState(false);
-  const [typedText, setTypedText] = useState("");
-  const fullText = "The AI Tech Lead that never sleeps.";
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!mounted) return;
-    let i = 0;
-    const interval = setInterval(() => {
-      setTypedText(fullText.slice(0, i + 1));
-      i++;
-      if (i >= fullText.length) clearInterval(interval);
-    }, 48);
-    return () => clearInterval(interval);
-  }, [mounted]);
-
   return (
     <main className={styles.main}>
-      {/* ── NAV ───────────────────────────────────────────────── */}
+
+      {/* NAV */}
       <nav className={styles.nav}>
-        <div className={styles.navLogo}>
-          <span className={styles.navLogoIcon}>⬡</span>
-          <span className={styles.navLogoText}>Bob <span className="gradient-text">360</span></span>
+        <span className={styles.navLogo}>Bob 360</span>
+        <div className={styles.navRight}>
+          <span className={styles.navBadge}>IBM Bob Hackathon 2026</span>
+          <Link href="/dashboard" className={styles.navBtn}>
+            Open Dashboard
+          </Link>
         </div>
-        <div className={styles.navLinks}>
-          <span className="badge badge-blue">
-            <span className="dot pulse"></span>
-            Powered by IBM Bob
-          </span>
-        </div>
-        <Link href="/dashboard" className="btn btn-primary btn-sm">
-          Open Dashboard →
-        </Link>
       </nav>
 
-      {/* ── HERO ──────────────────────────────────────────────── */}
+      {/* HERO */}
       <section className={styles.hero}>
-        <div className={styles.heroEyebrow}>
-          <span className="badge badge-blue">
-            <span className="dot pulse"></span>
-            IBM Bob Hackathon 2026
-          </span>
-        </div>
-
+        <p className={styles.heroEyebrow}>Developer Intelligence Dashboard</p>
         <h1 className={styles.heroTitle}>
-          <span className="gradient-text">Bob 360</span>
+          The AI tech lead<br />that never sleeps.
         </h1>
-
-        <p className={styles.heroSubtitle}>
-          {mounted ? typedText : fullText}
-          {mounted && typedText.length < fullText.length && (
-            <span className="terminal-cursor" />
-          )}
+        <p className={styles.heroSub}>
+          Bob 360 watches your entire repository — not just the file you have open.
+          It catches cascade failures, cleans dead code, translates PRs for executives,
+          and traces production crashes back to the exact commit that caused them.
         </p>
-
-        <p className={styles.heroTagline}>
-          From the first line of code, to the 3 AM crash —<br />
-          <strong>we&apos;ve got your repo covered.</strong>
-        </p>
-
         <div className={styles.heroCta}>
-          <Link href="/dashboard" className="btn btn-primary btn-lg">
-            🚀 Launch Dashboard
+          <Link href="/dashboard" className={styles.btnPrimary}>
+            Open Dashboard
           </Link>
           <a
-            href="https://github.com"
+            href="https://github.com/Huseyn-Verdiyev/Bob-360"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-ghost btn-lg"
+            className={styles.btnGhost}
           >
-            ⭐ GitHub Repo
+            View on GitHub
           </a>
         </div>
-
-        {/* Floating terminal preview */}
-        <div className={`${styles.terminalPreview} animate-fade-in-up delay-400`}>
-          <div className="terminal">
-            <div className="terminal-header">
-              <span className="terminal-dot red" />
-              <span className="terminal-dot yellow" />
-              <span className="terminal-dot green" />
-              <span style={{ marginLeft: 8, fontSize: 12, color: "var(--text-muted)" }}>
-                bob360 — analyzing repository
-              </span>
-            </div>
-            <div className="terminal-body">
-              <div className="terminal-line prompt">bob360 analyze ./ecommerce-platform</div>
-              <div className="terminal-line info">  ✦ Scanning 247 files across 18 directories...</div>
-              <div className="terminal-line warning">  ⚠ Found 5 dead files (1.3 MB bloat)</div>
-              <div className="terminal-line warning">  ⚠ Found 4 unused packages (moment, lodash, request, node-uuid)</div>
-              <div className="terminal-line error">  ✗ Found 1 cascade risk: user_id → userId rename affects 4 files</div>
-              <div className="terminal-line success">  ✓ PR #251 translated → executive summary ready</div>
-              <div className="terminal-line success">  ✓ Crash log traced → root cause: PR #247 by Farid Hashimli</div>
-              <div className="terminal-line muted" style={{ marginTop: 8 }}>
-                Summary: Repo is 54% lighter. 1 cascade blocked. 1 outage prevented.
-              </div>
-              <span className="terminal-cursor" />
-            </div>
-          </div>
-        </div>
       </section>
 
-      {/* ── STATS BAR ─────────────────────────────────────────── */}
-      <section className={styles.statsBar}>
-        {STATS.map((s) => (
-          <div key={s.label} className={`${styles.statItem} glass-card`}>
-            <div className={`stat-number gradient-text`}>{s.value}</div>
-            <div className="stat-label">{s.label}</div>
-          </div>
-        ))}
-      </section>
+      {/* DIVIDER */}
+      <div className={styles.divider} />
 
-      {/* ── FEATURES ──────────────────────────────────────────── */}
-      <section className={styles.features}>
-        <div className={styles.sectionHeader}>
-          <h2>Four problems. One guardian.</h2>
-          <p className={styles.sectionSub}>
-            Every stage of software development — from writing the first function
-            to recovering from a production crash — Bob 360 has you covered.
-          </p>
-        </div>
-
-        <div className={styles.featuresGrid}>
-          {FEATURES.map((f, i) => (
-            <div
-              key={f.title}
-              className={`${styles.featureCard} glass-card animate-fade-in-up`}
-              style={{ animationDelay: `${i * 0.1}s` }}
-            >
-              <div className={`${styles.featureIcon} ${styles[`featureIcon_${f.color}`]}`}>
-                {f.icon}
-              </div>
-              <h3 className={styles.featureTitle}>{f.title}</h3>
-              <p className={styles.featureDesc}>{f.desc}</p>
+      {/* MODULES */}
+      <section className={styles.modules}>
+        <p className={styles.sectionLabel}>What it does</p>
+        <h2 className={styles.sectionTitle}>Four problems, one dashboard.</h2>
+        <div className={styles.moduleGrid}>
+          {MODULES.map((m) => (
+            <div key={m.title} className={styles.moduleCard}>
+              <span className={styles.moduleTag}>{m.tag}</span>
+              <h3 className={styles.moduleTitle}>{m.title}</h3>
+              <p className={styles.moduleDesc}>{m.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ──────────────────────────────────────── */}
-      <section className={styles.howItWorks}>
-        <div className={styles.sectionHeader}>
-          <h2>The full SDLC. Covered.</h2>
-          <p className={styles.sectionSub}>
-            Bob 360 is the only tool that watches over your entire software
-            development lifecycle — not just autocompleting your code.
-          </p>
-        </div>
-        <div className={styles.lifecycle}>
-          {[
-            { step: "01", label: "Write", icon: "✏️", color: "blue",   desc: "Domino Preventer warns you in real-time as you edit" },
-            { step: "02", label: "Review", icon: "🔍", color: "cyan",   desc: "Code Diet cleans dead weight before merge" },
-            { step: "03", label: "Release", icon: "📦", color: "purple", desc: "PR Translator creates executive release notes" },
-            { step: "04", label: "Recover", icon: "🚨", color: "red",   desc: "3AM Savior traces crashes to root cause instantly" },
-          ].map((item, i) => (
-            <div key={item.step} className={styles.lifecycleItem}>
-              <div className={`${styles.lifecycleStep} ${styles[`step_${item.color}`]}`}>
-                <span>{item.icon}</span>
-                <strong>{item.label}</strong>
-              </div>
-              <p className={styles.lifecycleDesc}>{item.desc}</p>
-              {i < 3 && <div className={styles.lifecycleArrow}>→</div>}
-            </div>
-          ))}
-        </div>
-      </section>
+      {/* DIVIDER */}
+      <div className={styles.divider} />
 
-      {/* ── CTA ───────────────────────────────────────────────── */}
-      <section className={styles.ctaSection}>
-        <div className={`${styles.ctaCard} glass-card`}>
-          <div className={styles.ctaGlow} />
-          <h2 className={styles.ctaTitle}>
-            Ready to meet your <span className="gradient-text">AI Tech Lead</span>?
+      {/* WHY SECTION */}
+      <section className={styles.why}>
+        <div className={styles.whyContent}>
+          <p className={styles.sectionLabel}>Why this works</p>
+          <h2 className={styles.sectionTitle}>
+            Most AI tools see a snippet.<br />Bob sees the whole repo.
           </h2>
-          <p className={styles.ctaDesc}>
-            No setup. No configuration. Just paste your repo and watch Bob 360 work.
+          <p className={styles.whyText}>
+            Standard AI coding assistants work on whatever file you have open.
+            They can autocomplete a function, but they have no idea what will
+            break when you rename a database field three directories away.
           </p>
-          <Link href="/dashboard" className="btn btn-primary btn-lg">
-            🚀 Open Dashboard — It&apos;s Free
-          </Link>
+          <p className={styles.whyText}>
+            IBM Bob loads your entire repository into context. Bob 360 is built
+            on top of that foundation — four tools that only make sense when you
+            have the full picture.
+          </p>
+        </div>
+        <div className={styles.whyStats}>
+          <div className={styles.statRow}>
+            <span className={styles.statNum}>54%</span>
+            <span className={styles.statLabel}>average repo size reduction</span>
+          </div>
+          <div className={styles.statRow}>
+            <span className={styles.statNum}>43s</span>
+            <span className={styles.statLabel}>to resolve a production crash</span>
+          </div>
+          <div className={styles.statRow}>
+            <span className={styles.statNum}>0</span>
+            <span className={styles.statLabel}>cascade failures missed</span>
+          </div>
         </div>
       </section>
 
-      {/* ── FOOTER ────────────────────────────────────────────── */}
+      {/* FOOTER */}
       <footer className={styles.footer}>
-        <div className={styles.footerLogo}>
-          <span className={styles.navLogoIcon}>⬡</span>
-          <span>Bob <strong>360</strong></span>
-        </div>
+        <span className={styles.footerLogo}>Bob 360</span>
         <p className={styles.footerText}>
-          Built with ❤️ for IBM Bob Hackathon 2026 · Powered by IBM Bob AI
-        </p>
-        <p className={styles.footerText} style={{ marginTop: 4, color: "var(--text-muted)", fontSize: 12 }}>
-          Team: Farid Hashimli &amp; partner
+          Built by Huseyn Verdiyev & Farid Hashimli for IBM Bob Hackathon 2026
         </p>
       </footer>
+
     </main>
   );
 }
