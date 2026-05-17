@@ -10,6 +10,19 @@ export default function TranslatorPanel({ repo }: { repo: GitHubRepoContext | nu
   const [step, setStep] = useState<"idle" | "translating" | "result">("idle");
   const [progress, setProgress] = useState(0);
   const [bobResult, setBobResult] = useState<BobResult | null>(null);
+  const repoTechnicalSummary = repo
+    ? `## Repository Analysis: ${repo.fullName}
+
+### Live GitHub Context
+- Default branch: ${repo.defaultBranch}
+- Primary language: ${repo.language}
+- Files indexed: ${repo.files.length}
+- Source files analyzed: ${repo.sourceFiles.length}
+- Package manifests: ${repo.packageFiles.join(", ") || "none detected"}
+
+### Representative files
+${repo.sourceFiles.slice(0, 8).map((file) => `- ${file}`).join("\n")}`
+    : MOCK_PR.technical;
 
   const handleTranslate = () => {
     setStep("translating");
@@ -24,7 +37,7 @@ export default function TranslatorPanel({ repo }: { repo: GitHubRepoContext | nu
           fetch("/api/bob", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ workflow: "translator", repo, extra: MOCK_PR.technical }),
+            body: JSON.stringify({ workflow: "translator", repo, extra: repoTechnicalSummary }),
           })
             .then((res) => res.json())
             .then((data: { bob?: BobResult }) => setBobResult(data.bob ?? null))
@@ -44,10 +57,10 @@ export default function TranslatorPanel({ repo }: { repo: GitHubRepoContext | nu
         <div className={styles.sectionLabel}>📋 Pull Request Description (Technical)</div>
         <div className={`glass-card ${styles.prCard}`}>
           <div className={styles.prHeader}>
-            <span className="badge badge-purple">PR #251 — Merged</span>
-            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>2 hours ago · by Farid Hashimli</span>
+            <span className="badge badge-purple">{repo ? "Repo Scan — Live" : "PR #251 — Merged"}</span>
+            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>{repo ? repo.fullName : "2 hours ago · by Farid Hashimli"}</span>
           </div>
-          <pre className={styles.prBody}>{MOCK_PR.technical}</pre>
+          <pre className={styles.prBody}>{repoTechnicalSummary}</pre>
         </div>
 
         {step === "idle" && (
@@ -147,7 +160,7 @@ export default function TranslatorPanel({ repo }: { repo: GitHubRepoContext | nu
                 <div className={styles.prHeader}>
                   <span className="badge badge-purple">Original — Technical</span>
                 </div>
-                <pre className={styles.prBody}>{MOCK_PR.technical}</pre>
+                <pre className={styles.prBody}>{repoTechnicalSummary}</pre>
               </div>
             )}
           </div>

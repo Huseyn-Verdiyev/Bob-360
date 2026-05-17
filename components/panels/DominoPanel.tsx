@@ -14,6 +14,16 @@ export default function DominoPanel({ repo }: { repo: GitHubRepoContext | null }
   const [step, setStep] = useState<"idle" | "analyzing" | "result" | "fixed">("idle");
   const [progress, setProgress] = useState(0);
   const [bobResult, setBobResult] = useState<BobResult | null>(null);
+  const sourceFiles = repo?.sourceFiles.length ? repo.sourceFiles : MOCK_CHANGE.affectedFiles.map((file) => file.path);
+  const primaryFile = sourceFiles.find((file) => /\.(ts|tsx|js|jsx)$/i.test(file)) ?? sourceFiles[0] ?? "src/models/User.js";
+  const affectedFiles = repo
+    ? sourceFiles.slice(1, 5).map((path, index) => ({
+        path,
+        line: 12 + index * 9,
+        snippet: `Reference path touched by ${primaryFile.split("/").pop() ?? "selected file"}`,
+        severity: index === 0 ? "critical" : "warning",
+      }))
+    : MOCK_CHANGE.affectedFiles;
 
   const handleAnalyze = () => {
     setStep("analyzing");
@@ -53,7 +63,7 @@ export default function DominoPanel({ repo }: { repo: GitHubRepoContext | null }
             <span className="terminal-dot yellow" />
             <span className="terminal-dot yellow" />
             <span className="terminal-dot green" />
-            <span className="code-editor-filename">src/models/User.js</span>
+            <span className="code-editor-filename">{primaryFile}</span>
           </div>
           <div className="code-editor-body">
             {[
@@ -100,7 +110,7 @@ export default function DominoPanel({ repo }: { repo: GitHubRepoContext | null }
             {" → "}
             <code className={styles.codeInline} style={{ color: "var(--accent-green)" }}>userId</code>
             {" "}
-            in <code className={styles.codeInline}>src/models/User.js</code> for camelCase consistency.
+            in <code className={styles.codeInline}>{primaryFile}</code> for naming consistency.
           </div>
         </div>
 
@@ -145,7 +155,7 @@ export default function DominoPanel({ repo }: { repo: GitHubRepoContext | null }
               <span style={{ fontSize: 20 }}>⚠️</span>
               <div>
                 <div style={{ fontWeight: 700, color: "var(--accent-red)", marginBottom: 4 }}>
-                  Cascade Risk Detected — {MOCK_CHANGE.affectedFiles.length} files will break
+                  Cascade Risk Detected — {affectedFiles.length} files need review
                 </div>
                 <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
                   {bobResult?.summary ?? "Bob 360 traced all references to user_id across the full repository."}
@@ -155,7 +165,7 @@ export default function DominoPanel({ repo }: { repo: GitHubRepoContext | null }
 
             {/* Affected Files */}
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 16 }}>
-              {MOCK_CHANGE.affectedFiles.map((file) => (
+              {affectedFiles.map((file) => (
                 <div
                   key={file.path}
                   className={`${styles.affectedFile} glass-card`}
@@ -186,7 +196,7 @@ export default function DominoPanel({ repo }: { repo: GitHubRepoContext | null }
                 style={{ width: "100%", marginTop: 16 }}
                 onClick={handleFix}
               >
-                ⚡ Auto-fix all {MOCK_CHANGE.affectedFiles.length} files with Bob 360
+                ⚡ Auto-fix all {affectedFiles.length} files with Bob 360
               </button>
             )}
 

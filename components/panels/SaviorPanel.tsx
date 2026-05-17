@@ -16,7 +16,17 @@ export default function SaviorPanel({ repo }: { repo: GitHubRepoContext | null }
 
 
   const handleLoadDemo = () => {
-    setLog(MOCK_ERROR_LOG);
+    setLog(repo
+      ? `[ERROR] Production incident in ${repo.fullName}
+Primary language: ${repo.language}
+Default branch: ${repo.defaultBranch}
+Files indexed: ${repo.files.length}
+
+Stack candidates:
+${repo.sourceFiles.slice(0, 8).map((file, index) => `  at ${file}:${24 + index * 11}:${5 + index}`).join("\n")}
+
+Request: Analyze connected GitHub repo and identify the most likely crash path.`
+      : MOCK_ERROR_LOG);
     setAlarmActive(true);
   };
 
@@ -137,7 +147,7 @@ export default function SaviorPanel({ repo }: { repo: GitHubRepoContext | null }
             <div className={styles.emptyStateIcon}>🚨</div>
             <div className={styles.emptyStateText}>
               {step === "idle"
-                ? "Paste a crash log and Bob 360 will trace it to the exact commit, PR, and developer — in seconds."
+                ? "Paste a crash log and Bob 360 will trace it across the connected GitHub repository — in seconds."
                 : "Scanning git history, cross-referencing file changes, checking all recent PRs..."}
             </div>
           </div>
