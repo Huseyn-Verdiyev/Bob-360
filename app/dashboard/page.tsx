@@ -24,10 +24,17 @@ export default function DashboardPage() {
   const [bob, setBob] = useState<BobResult | null>(null);
   const [repoStatus, setRepoStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [repoError, setRepoError] = useState("");
+  const [analysisUsed, setAnalysisUsed] = useState(false);
   const activePanel = PANELS.find((p) => p.id === active) ?? PANELS[0];
 
   const connectRepo = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (analysisUsed) {
+      setRepoStatus("error");
+      setRepoError("This browser has already used its one repository analysis.");
+      return;
+    }
+
     setRepoStatus("loading");
     setRepoError("");
 
@@ -50,6 +57,7 @@ export default function DashboardPage() {
       setRepo(data.repo);
       setBob(data.bob ?? null);
       setRepoStatus("ready");
+      setAnalysisUsed(true);
     } catch (error) {
       setRepoStatus("error");
       setRepoError(error instanceof Error ? error.message : "Repo could not be connected.");
@@ -158,8 +166,8 @@ export default function DashboardPage() {
               placeholder="https://github.com/owner/repo"
               aria-label="GitHub repository URL"
             />
-            <button className="btn btn-primary" type="submit" disabled={repoStatus === "loading"}>
-              {repoStatus === "loading" ? "Connecting..." : "Connect Repo"}
+            <button className="btn btn-primary" type="submit" disabled={repoStatus === "loading" || analysisUsed}>
+              {repoStatus === "loading" ? "Connecting..." : analysisUsed ? "Analysis Used" : "Connect Repo"}
             </button>
           </form>
           {repoStatus === "ready" && repo && (
@@ -169,6 +177,9 @@ export default function DashboardPage() {
               <span>{Object.keys(repo.languages).slice(0, 3).join(", ") || repo.language}</span>
               <span>{bob?.summary}</span>
             </div>
+          )}
+          {analysisUsed && repoStatus !== "ready" && (
+            <div className={styles.repoLimit}>Each visitor can analyze one GitHub repository once.</div>
           )}
           {repoStatus === "error" && <div className={styles.repoError}>{repoError}</div>}
         </section>

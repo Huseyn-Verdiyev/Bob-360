@@ -262,8 +262,8 @@
 
 .repoForm {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(260px, 420px) auto;
-  align-items: center;
+  grid-template-columns: minmax(320px, 1fr) minmax(260px, 420px) auto;
+  align-items: start;
   gap: 14px;
 }
 
@@ -286,10 +286,9 @@
   color: var(--text-secondary);
   font-size: 13px;
   font-weight: 600;
-  line-height: 1.4;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.6;
+  max-width: 860px;
+  white-space: normal;
 }
 
 .repoInput {
@@ -325,6 +324,16 @@
   flex-basis: 100%;
   color: var(--text-secondary);
   line-height: 1.5;
+}
+
+.repoLimit,
+.repoError {
+  margin-top: 10px;
+  font-size: 12px;
+}
+
+.repoLimit {
+  color: var(--accent-amber);
 }
 
 .repoError {
