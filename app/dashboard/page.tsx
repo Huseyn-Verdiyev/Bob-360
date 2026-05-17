@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import Link from "next/link";
 import DominoPanel from "@/components/panels/DominoPanel";
@@ -26,6 +26,38 @@ export default function DashboardPage() {
   const [repoError, setRepoError] = useState("");
   const [analysisUsed, setAnalysisUsed] = useState(false);
   const activePanel = PANELS.find((p) => p.id === active) ?? PANELS[0];
+  const repoDisplayName = repo?.fullName ?? "Connect a GitHub repo";
+  const repoDisplayMeta = repo ? `${repo.files.length} files · ${repo.language}` : "Paste link to analyze files";
+
+  useEffect(() => {
+    let ignore = false;
+
+    async function loadDefaultRepo() {
+      try {
+        const res = await fetch("/api/repo/preview", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ repoUrl }),
+        });
+        const data = (await res.json()) as {
+          repo?: GitHubRepoContext;
+          bob?: BobResult;
+        };
+
+        if (!ignore && data.repo) {
+          setRepo(data.repo);
+          setBob(data.bob ?? null);
+        }
+      } catch {
+        // Keep the empty state if preview loading fails.
+      }
+    }
+
+    loadDefaultRepo();
+    return () => {
+      ignore = true;
+    };
+  }, [repoUrl]);
 
   const connectRepo = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -83,10 +115,8 @@ export default function DashboardPage() {
           <div className={styles.repoInfo}>
             <span className={styles.repoIcon}>📁</span>
             <div>
-              <div className={styles.repoName}>{repo?.fullName ?? "ecommerce-platform"}</div>
-              <div className={styles.repoMeta}>
-                {repo ? `${repo.files.length} files · ${repo.language}` : "12 files · 4 packages"}
-              </div>
+              <div className={styles.repoName}>{repoDisplayName}</div>
+              <div className={styles.repoMeta}>{repoDisplayMeta}</div>
             </div>
           </div>
           <div className={styles.repoSignal}>
@@ -120,7 +150,7 @@ export default function DashboardPage() {
             <span className={styles.bobStatusDot} />
             <div>
               <div className={styles.bobStatusTitle}>IBM Bob</div>
-              <div className={styles.bobStatusSub}>Full repo context loaded</div>
+              <div className={styles.bobStatusSub}>{repo ? "GitHub repo context loaded" : "Waiting for repo link"}</div>
             </div>
           </div>
         </div>

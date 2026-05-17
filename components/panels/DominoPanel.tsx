@@ -57,7 +57,7 @@ export default function DominoPanel({ repo }: { repo: GitHubRepoContext | null }
     <div className={styles.panelGrid2}>
       {/* ── LEFT: Code Editor ──────────────────────────────── */}
       <div>
-        <div className={styles.sectionLabel}>📄 {repo?.fullName ?? "user_model.js"} — Editing</div>
+        <div className={styles.sectionLabel}>📄 {primaryFile} — Editing</div>
         <div className="code-editor">
           <div className="code-editor-header">
             <span className="terminal-dot yellow" />
@@ -105,10 +105,10 @@ export default function DominoPanel({ repo }: { repo: GitHubRepoContext | null }
         <div className={`${styles.changeBox} glass-card`} style={{ marginTop: 16 }}>
           <div className={styles.changeBoxTitle}>Proposed Change</div>
           <div className={styles.changeBoxBody}>
-            Rename field{" "}
-            <code className={styles.codeInline} style={{ color: "var(--accent-red)" }}>user_id</code>
+            Analyze references around{" "}
+            <code className={styles.codeInline} style={{ color: "var(--accent-red)" }}>{primaryFile.split("/").pop()}</code>
             {" → "}
-            <code className={styles.codeInline} style={{ color: "var(--accent-green)" }}>userId</code>
+            <code className={styles.codeInline} style={{ color: "var(--accent-green)" }}>{repo?.language ?? "JavaScript"}</code>
             {" "}
             in <code className={styles.codeInline}>{primaryFile}</code> for naming consistency.
           </div>
