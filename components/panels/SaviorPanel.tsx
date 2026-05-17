@@ -1,12 +1,15 @@
 "use client";
 import { useState } from "react";
 import { MOCK_ERROR_LOG, MOCK_ROOT_CAUSE } from "@/lib/mock-repo";
+import type { BobResult } from "@/lib/bob-client";
+import type { GitHubRepoContext } from "@/lib/github";
 import styles from "./panels.module.css";
 
-export default function SaviorPanel() {
+export default function SaviorPanel({ repo }: { repo: GitHubRepoContext | null }) {
   const [log, setLog] = useState("");
   const [step, setStep] = useState<"idle" | "analyzing" | "result" | "fixed">("idle");
   const [progress, setProgress] = useState(0);
+  const [bobResult, setBobResult] = useState<BobResult | null>(null);
   const [alarmActive, setAlarmActive] = useState(false);
   const [timeStr] = useState("03:17");
   const [amPm] = useState("AM");
@@ -27,7 +30,18 @@ export default function SaviorPanel() {
       if (p >= 100) {
         p = 100;
         clearInterval(iv);
-        setTimeout(() => setStep("result"), 500);
+        if (repo) {
+          fetch("/api/bob", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ workflow: "savior", repo, extra: log }),
+          })
+            .then((res) => res.json())
+            .then((data: { bob?: BobResult }) => setBobResult(data.bob ?? null))
+            .finally(() => setTimeout(() => setStep("result"), 300));
+        } else {
+          setTimeout(() => setStep("result"), 500);
+        }
       }
       setProgress(Math.min(p, 100));
     }, 200);
@@ -174,7 +188,7 @@ export default function SaviorPanel() {
             {/* Explanation */}
             <div className={`${styles.explanationCard} glass-card`}>
               <div style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.7 }}>
-                {MOCK_ROOT_CAUSE.explanation}
+                {bobResult?.summary ?? MOCK_ROOT_CAUSE.explanation}
               </div>
             </div>
 

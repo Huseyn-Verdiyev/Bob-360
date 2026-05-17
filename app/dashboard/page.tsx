@@ -1,10 +1,13 @@
 "use client";
 import { useState } from "react";
+import type { FormEvent } from "react";
 import Link from "next/link";
 import DominoPanel from "@/components/panels/DominoPanel";
 import DietPanel from "@/components/panels/DietPanel";
 import TranslatorPanel from "@/components/panels/TranslatorPanel";
 import SaviorPanel from "@/components/panels/SaviorPanel";
+import type { BobResult } from "@/lib/bob-client";
+import type { GitHubRepoContext } from "@/lib/github";
 import styles from "./dashboard.module.css";
 
 const PANELS = [
@@ -16,6 +19,42 @@ const PANELS = [
 
 export default function DashboardPage() {
   const [active, setActive] = useState("domino");
+  const [repoUrl, setRepoUrl] = useState("https://github.com/Huseyn-Verdiyev/Bob-360");
+  const [repo, setRepo] = useState<GitHubRepoContext | null>(null);
+  const [bob, setBob] = useState<BobResult | null>(null);
+  const [repoStatus, setRepoStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  const [repoError, setRepoError] = useState("");
+  const activePanel = PANELS.find((p) => p.id === active) ?? PANELS[0];
+
+  const connectRepo = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setRepoStatus("loading");
+    setRepoError("");
+
+    try {
+      const res = await fetch("/api/repo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ repoUrl }),
+      });
+      const data = (await res.json()) as {
+        repo?: GitHubRepoContext;
+        bob?: BobResult;
+        error?: string;
+      };
+
+      if (!res.ok || !data.repo) {
+        throw new Error(data.error ?? "Repo could not be connected.");
+      }
+
+      setRepo(data.repo);
+      setBob(data.bob ?? null);
+      setRepoStatus("ready");
+    } catch (error) {
+      setRepoStatus("error");
+      setRepoError(error instanceof Error ? error.message : "Repo could not be connected.");
+    }
+  };
 
   return (
     <div className={styles.layout}>
@@ -36,9 +75,15 @@ export default function DashboardPage() {
           <div className={styles.repoInfo}>
             <span className={styles.repoIcon}>📁</span>
             <div>
-              <div className={styles.repoName}>ecommerce-platform</div>
-              <div className={styles.repoMeta}>12 files · 4 packages</div>
+              <div className={styles.repoName}>{repo?.fullName ?? "ecommerce-platform"}</div>
+              <div className={styles.repoMeta}>
+                {repo ? `${repo.files.length} files · ${repo.language}` : "12 files · 4 packages"}
+              </div>
             </div>
+          </div>
+          <div className={styles.repoSignal}>
+            <span>Repo context</span>
+            <strong>{repo ? `${repo.sourceFiles.length} source files` : "247 refs mapped"}</strong>
           </div>
         </div>
 
@@ -77,9 +122,13 @@ export default function DashboardPage() {
       <main className={styles.content}>
         <header className={styles.contentHeader}>
           <div>
+            <div className={styles.headerKicker}>
+              IBM Bob Hackathon Demo
+              <span>{repo ? `${repo.fullName} indexed` : "Live repository intelligence"}</span>
+            </div>
             <h1 className={styles.contentTitle}>
-              {PANELS.find((p) => p.id === active)?.icon}{" "}
-              {PANELS.find((p) => p.id === active)?.label}
+              {activePanel.icon}{" "}
+              {activePanel.label}
             </h1>
             <p className={styles.contentSub}>
               {active === "domino"     && "Real-time cascade failure detection across your entire repository."}
@@ -91,10 +140,38 @@ export default function DashboardPage() {
           <div className={styles.headerRight}>
             <span className="badge badge-blue">
               <span className="dot pulse" />
-              IBM Bob Connected
+              {bob?.provider === "ibm-bob" ? "IBM Bob Live" : "IBM Bob Ready"}
             </span>
           </div>
         </header>
+
+        <section className={styles.repoConnect}>
+          <form className={styles.repoForm} onSubmit={connectRepo}>
+            <div className={styles.repoFormCopy}>
+              <span className={styles.repoFormLabel}>GitHub repository</span>
+              <strong>{repo ? repo.description : "Paste a repo link and Bob 360 will build live context."}</strong>
+            </div>
+            <input
+              className={styles.repoInput}
+              value={repoUrl}
+              onChange={(event) => setRepoUrl(event.target.value)}
+              placeholder="https://github.com/owner/repo"
+              aria-label="GitHub repository URL"
+            />
+            <button className="btn btn-primary" type="submit" disabled={repoStatus === "loading"}>
+              {repoStatus === "loading" ? "Connecting..." : "Connect Repo"}
+            </button>
+          </form>
+          {repoStatus === "ready" && repo && (
+            <div className={styles.repoConnected}>
+              <span className="badge badge-green">Connected</span>
+              <span>{repo.defaultBranch}</span>
+              <span>{Object.keys(repo.languages).slice(0, 3).join(", ") || repo.language}</span>
+              <span>{bob?.summary}</span>
+            </div>
+          )}
+          {repoStatus === "error" && <div className={styles.repoError}>{repoError}</div>}
+        </section>
 
         {/* ── IMPACT BAR ────────────────────────────────────────── */}
         <div className={styles.impactBar}>
@@ -104,8 +181,8 @@ export default function DashboardPage() {
             { icon: "👔", value: "1",   label: "Report Generated", color: "purple"},
             { icon: "🚨", value: "43s", label: "Downtime Saved",   color: "red"   },
           ].map((s) => (
-            <div key={s.label} className={`${styles.impactItem}`}>
-              <span className={styles.impactIcon}>{s.icon}</span>
+            <div key={s.label} className={`${styles.impactItem} ${styles[`impactItem_${s.color}`]}`}>
+              <span className={styles.impactIcon} aria-hidden="true">{s.icon}</span>
               <span className={`${styles.impactValue} gradient-text`}>{s.value}</span>
               <span className={styles.impactLabel}>{s.label}</span>
             </div>
@@ -113,10 +190,10 @@ export default function DashboardPage() {
         </div>
 
         <div className={styles.panelContainer} key={active}>
-          {active === "domino"     && <DominoPanel />}
-          {active === "diet"       && <DietPanel />}
-          {active === "translator" && <TranslatorPanel />}
-          {active === "savior"     && <SaviorPanel />}
+          {active === "domino"     && <DominoPanel repo={repo} />}
+          {active === "diet"       && <DietPanel repo={repo} />}
+          {active === "translator" && <TranslatorPanel repo={repo} />}
+          {active === "savior"     && <SaviorPanel repo={repo} />}
         </div>
       </main>
     </div>

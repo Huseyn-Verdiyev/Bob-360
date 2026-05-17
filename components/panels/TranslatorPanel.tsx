@@ -1,12 +1,15 @@
 "use client";
 import { useState } from "react";
 import { MOCK_PR } from "@/lib/mock-repo";
+import type { BobResult } from "@/lib/bob-client";
+import type { GitHubRepoContext } from "@/lib/github";
 import styles from "./panels.module.css";
 
-export default function TranslatorPanel() {
+export default function TranslatorPanel({ repo }: { repo: GitHubRepoContext | null }) {
   const [mode, setMode] = useState<"technical" | "executive">("executive");
   const [step, setStep] = useState<"idle" | "translating" | "result">("idle");
   const [progress, setProgress] = useState(0);
+  const [bobResult, setBobResult] = useState<BobResult | null>(null);
 
   const handleTranslate = () => {
     setStep("translating");
@@ -17,7 +20,18 @@ export default function TranslatorPanel() {
       if (p >= 100) {
         p = 100;
         clearInterval(iv);
-        setTimeout(() => setStep("result"), 300);
+        if (repo) {
+          fetch("/api/bob", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ workflow: "translator", repo, extra: MOCK_PR.technical }),
+          })
+            .then((res) => res.json())
+            .then((data: { bob?: BobResult }) => setBobResult(data.bob ?? null))
+            .finally(() => setTimeout(() => setStep("result"), 250));
+        } else {
+          setTimeout(() => setStep("result"), 300);
+        }
       }
       setProgress(Math.min(p, 100));
     }, 160);
@@ -97,7 +111,7 @@ export default function TranslatorPanel() {
                     </div>
                   </div>
 
-                  <div className={styles.reportHeadline}>{MOCK_PR.executive.headline}</div>
+                  <div className={styles.reportHeadline}>{bobResult?.summary ?? MOCK_PR.executive.headline}</div>
 
                   <ul className={styles.reportBullets}>
                     {MOCK_PR.executive.bullets.map((b, i) => (

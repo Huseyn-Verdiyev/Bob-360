@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
 import { MOCK_CHANGE } from "@/lib/mock-repo";
+import type { BobResult } from "@/lib/bob-client";
+import type { GitHubRepoContext } from "@/lib/github";
 import styles from "./panels.module.css";
 
 const SEVERITY_COLOR: Record<string, string> = {
@@ -8,9 +10,10 @@ const SEVERITY_COLOR: Record<string, string> = {
   warning:  "amber",
 };
 
-export default function DominoPanel() {
+export default function DominoPanel({ repo }: { repo: GitHubRepoContext | null }) {
   const [step, setStep] = useState<"idle" | "analyzing" | "result" | "fixed">("idle");
   const [progress, setProgress] = useState(0);
+  const [bobResult, setBobResult] = useState<BobResult | null>(null);
 
   const handleAnalyze = () => {
     setStep("analyzing");
@@ -21,7 +24,18 @@ export default function DominoPanel() {
       if (p >= 100) {
         p = 100;
         clearInterval(iv);
-        setTimeout(() => setStep("result"), 400);
+        if (repo) {
+          fetch("/api/bob", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ workflow: "domino", repo }),
+          })
+            .then((res) => res.json())
+            .then((data: { bob?: BobResult }) => setBobResult(data.bob ?? null))
+            .finally(() => setTimeout(() => setStep("result"), 300));
+        } else {
+          setTimeout(() => setStep("result"), 400);
+        }
       }
       setProgress(Math.min(p, 100));
     }, 180);
@@ -33,7 +47,7 @@ export default function DominoPanel() {
     <div className={styles.panelGrid2}>
       {/* ── LEFT: Code Editor ──────────────────────────────── */}
       <div>
-        <div className={styles.sectionLabel}>📄 user_model.js — Editing</div>
+        <div className={styles.sectionLabel}>📄 {repo?.fullName ?? "user_model.js"} — Editing</div>
         <div className="code-editor">
           <div className="code-editor-header">
             <span className="terminal-dot yellow" />
@@ -43,7 +57,7 @@ export default function DominoPanel() {
           </div>
           <div className="code-editor-body">
             {[
-              { n:1,  content: <><span className="kw">const</span> mongoose = <span className="fn">require</span>(<span className="str">'mongoose'</span>)</> },
+              { n:1,  content: <><span className="kw">const</span> mongoose = <span className="fn">require</span>(<span className="str">&apos;mongoose&apos;</span>)</> },
               { n:2,  content: <></> },
               { n:3,  content: <><span className="kw">const</span> userSchema = <span className="kw">new</span> mongoose.<span className="fn">Schema</span>({'{'}</> },
               { n:4,  content: <>{"  "}<span className="prop">email</span>:    {'{'} type: String, required: <span className="kw">true</span> {'}'}</>, },
@@ -103,7 +117,7 @@ export default function DominoPanel() {
               <div className="progress-fill blue" style={{ width: `${progress}%` }} />
             </div>
             <div className={styles.analyzingHint} style={{ marginTop: 8 }}>
-              Tracing references across {Math.round(progress * 2.47)} / 247 files...
+              Tracing references across {Math.round(progress * Math.max(12, repo?.sourceFiles.length ?? 247) / 100)} / {repo?.sourceFiles.length ?? 247} files...
             </div>
           </div>
         )}
@@ -134,7 +148,7 @@ export default function DominoPanel() {
                   Cascade Risk Detected — {MOCK_CHANGE.affectedFiles.length} files will break
                 </div>
                 <div style={{ fontSize: 13, color: "var(--text-muted)" }}>
-                  Bob 360 traced all references to <code className={styles.codeInline}>user_id</code> across the full repository.
+                  {bobResult?.summary ?? "Bob 360 traced all references to user_id across the full repository."}
                 </div>
               </div>
             </div>

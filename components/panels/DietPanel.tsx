@@ -1,12 +1,15 @@
 "use client";
 import { useState } from "react";
 import { MOCK_REPO } from "@/lib/mock-repo";
+import type { BobResult } from "@/lib/bob-client";
+import type { GitHubRepoContext } from "@/lib/github";
 import styles from "./panels.module.css";
 
-export default function DietPanel() {
+export default function DietPanel({ repo }: { repo: GitHubRepoContext | null }) {
   const [step, setStep] = useState<"idle" | "scanning" | "result" | "cleaned">("idle");
   const [progress, setProgress] = useState(0);
   const [deletedItems, setDeletedItems] = useState<string[]>([]);
+  const [bobResult, setBobResult] = useState<BobResult | null>(null);
 
   const handleScan = () => {
     setStep("scanning");
@@ -17,7 +20,18 @@ export default function DietPanel() {
       if (p >= 100) {
         p = 100;
         clearInterval(iv);
-        setTimeout(() => setStep("result"), 400);
+        if (repo) {
+          fetch("/api/bob", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ workflow: "diet", repo }),
+          })
+            .then((res) => res.json())
+            .then((data: { bob?: BobResult }) => setBobResult(data.bob ?? null))
+            .finally(() => setTimeout(() => setStep("result"), 300));
+        } else {
+          setTimeout(() => setStep("result"), 400);
+        }
       }
       setProgress(Math.min(p, 100));
     }, 150);
@@ -49,9 +63,9 @@ export default function DietPanel() {
         <div className={styles.sectionLabel}>📁 Repository File Tree</div>
         <div className={`glass-card ${styles.fileTreeCard}`}>
           <div className={styles.fileTreeHeader}>
-            <span>📦 ecommerce-platform</span>
+            <span>📦 {repo?.fullName ?? "ecommerce-platform"}</span>
             <span style={{ fontSize: 11, color: "var(--text-muted)" }}>
-              {MOCK_REPO.stats.totalFiles} files total
+              {repo?.files.length ?? MOCK_REPO.stats.totalFiles} files total
             </span>
           </div>
           <div className="file-tree">
@@ -144,6 +158,13 @@ export default function DietPanel() {
 
             {/* Dead packages */}
             <div className={styles.sectionLabel} style={{ marginTop: 20 }}>Zombie Packages (package.json)</div>
+            {bobResult && (
+              <div className={`${styles.explanationCard} glass-card`} style={{ marginBottom: 10 }}>
+                <div style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.6 }}>
+                  {bobResult.summary}
+                </div>
+              </div>
+            )}
             {MOCK_REPO.packages.dead.map((pkg) => (
               <div
                 key={pkg.name}
